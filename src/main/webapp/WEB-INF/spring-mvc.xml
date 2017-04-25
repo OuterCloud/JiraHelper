@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
+	<import resource="classpath:health-url-mapping.xml" />
+
+	<!-- 自动扫描且只扫描@Controller -->
+	<context:component-scan base-package="com.quality.web" use-default-filters="false">
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+	
+	<!-- 扫描定时任务jar包里面的@Controller标注 -->
+	<context:component-scan base-package="com.netease.cron" use-default-filters="false">
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+
+	<mvc:annotation-driven />
+
+	<mvc:default-servlet-handler />
+	
+	<!-- for ajax with json -->
+	<bean
+		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<bean
+					class="org.springframework.http.converter.StringHttpMessageConverter">
+					<property name="supportedMediaTypes">
+						<list>
+							<value>text/html;charset=UTF-8</value>
+						</list>
+					</property>
+				</bean>
+				<bean id="jacksonMessageConverter"
+					class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter">
+					<property name="supportedMediaTypes">
+						<list>
+							<value>application/json;charset=UTF-8</value>
+						</list>
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+</beans>

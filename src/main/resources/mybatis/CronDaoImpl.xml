@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="Cron">
+	<resultMap id="resultMap" type="com.netease.cron.CronModel">
+		<result column="CRON_NAME" property="cronName"
+			jdbcType="VARCHAR" />
+		<result column="SERVICE_NAME" property="serviceName"
+			jdbcType="VARCHAR" />
+		<result column="CRON_EXPRESSION" property="cronExpression"
+			jdbcType="VARCHAR" />
+		<result column="LIMIT_IP" property="limitIp" jdbcType="VARCHAR" />
+		<result column="CRON_DESC" property="cronDesc"
+			jdbcType="VARCHAR" />
+		<result column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="FIRE_ON_STARTUP" property="fireOnStartUp" jdbcType="DECIMAL" />
+		<result column="GROUP_NAME" property="group" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<select id="getAllCron" resultMap="resultMap" parameterType="java.util.Map">
+		select * from TB_CRON_INI 
+		<if test="withOutAllGroup==false">
+			where id=#{systemCronId, jdbcType=VARCHAR}
+			<choose>
+				<when test="group!=null">
+					or GROUP_NAME = #{group, jdbcType=VARCHAR}
+				</when>
+				<otherwise>
+					or GROUP_NAME is null
+				</otherwise>
+			</choose>
+		</if>
+		order by CRON_NAME
+	</select>
+	
+	<insert id="addCron" parameterType="com.netease.cron.CronModel">
+		insert into TB_CRON_INI(cron_name,service_name,cron_desc,cron_expression,limit_ip, id, fire_on_startup, group_name)
+		values 
+		(#{cronName,jdbcType=VARCHAR}, #{serviceName,jdbcType=VARCHAR}, 
+		#{cronDesc,jdbcType=VARCHAR}, #{cronExpression,jdbcType=VARCHAR},
+		#{limitIp,jdbcType=VARCHAR}, #{id,jdbcType=VARCHAR},
+		#{fireOnStartUp,jdbcType=DECIMAL},#{group,jdbcType=VARCHAR}
+		)
+	</insert> 
+
+	<update id="updateCron" parameterType="com.netease.cron.CronModel">
+		update TB_CRON_INI
+		set cron_name=#{cronName,jdbcType=VARCHAR},
+		service_name=#{serviceName,jdbcType=VARCHAR},
+		cron_desc=#{cronDesc,jdbcType=VARCHAR},
+		cron_expression=#{cronExpression,jdbcType=VARCHAR},
+		limit_ip=#{limitIp,jdbcType=VARCHAR},
+		fire_on_startup=#{fireOnStartUp,jdbcType=DECIMAL},
+		group_name=#{group,jdbcType=VARCHAR}
+		where id= #{id,jdbcType=VARCHAR}
+	</update> 
+	<select id="selectCron" resultMap="resultMap" parameterType="java.lang.String">
+		select * from TB_CRON_INI
+		where id=#{id,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteCron" parameterType="java.lang.String">
+		delete from TB_CRON_INI
+		where id=#{id,jdbcType=VARCHAR}
+	</delete>
+	
+	
+</mapper>
